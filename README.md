@@ -1,74 +1,105 @@
-# Phase Transition: Percolation and the 2D Ising Model
+# 相变数值模拟：渗流模型与二维 Ising 模型
 
-A computational study of phase transitions through two canonical models:
+本项目通过两个经典统计物理模型研究相变现象：
 
-- **Site percolation:** Monte Carlo estimation of the critical threshold using a Union-Find data structure.
-- **2D Ising model:** Gibbs sampling across inverse temperatures, with analyses of spin configurations, magnetization, energy, and critical behavior.
+- **格点渗流（Site Percolation）**：使用 Monte Carlo 方法估计二维方格的临界渗流阈值，并通过并查集（Union-Find）高效判断系统是否贯通。
+- **二维 Ising 模型**：使用 Gibbs Sampling 模拟不同逆温度下的自旋系统，分析自旋构型、磁化强度、能量及临界行为。
 
-This project was completed for *Probability Theory and Statistics for EECS* at ShanghaiTech University by **Li Jianhao, Li Yiming, and Wu Zihan**.
+本项目为上海科技大学《面向信息科学的概率论与数理统计》课程项目，由 **李建浩、李一鸣、吴子涵** 共同完成。
 
-## Highlights
+## 项目亮点
 
-- Estimates the square-lattice site-percolation threshold at approximately `0.592`, close to the reference value `0.592746`.
-- Studies finite-size effects and convergence across multiple lattice sizes.
-- Simulates the 2D Ising model with periodic boundary conditions and heat-bath/Gibbs updates.
-- Visualizes equilibrium configurations and thermodynamic observables around the phase transition.
+- 得到二维方格点渗流阈值约为 `0.592`，与参考值 `0.592746` 基本一致。
+- 对不同晶格尺寸进行重复实验，分析有限尺寸效应与估计结果的收敛性。
+- 使用带路径压缩和按秩合并的并查集，将渗流连通性判断控制在近似常数时间内。
+- 使用周期性边界条件和热浴法（Heat-Bath/Gibbs Update）模拟二维 Ising 模型。
+- 通过自旋构型、平均磁化强度和平均能量等指标展示相变附近的系统行为。
+- Notebook 包含算法实现、数学推导、实验结果、统计分析和可视化。
 
-## Repository contents
+## 仓库结构
 
 ```text
 .
-|-- Phase_Transition.ipynb   # Complete executable analysis
-|-- Phase_Transition.pdf     # Final rendered report
-|-- Phase_Transition.tex     # LaTeX source of the report
-|-- images/                  # Figures used by the report
-|-- requirements.txt         # Python dependencies
-`-- README.md
+|-- Phase_Transition.ipynb   # 完整的可运行分析与实验代码
+|-- Phase_Transition.pdf     # 最终项目报告
+|-- Phase_Transition.tex     # 报告的 LaTeX 源码
+|-- images/                  # 报告使用的图片
+|-- requirements.txt         # Python 环境依赖
+`-- README.md                # 项目说明
 ```
 
-## Quick start
+## 环境配置
 
-Python 3.10 or newer is recommended.
+建议使用 Python 3.10 或更高版本。
+
+首先克隆仓库并进入项目目录：
 
 ```bash
-git clone https://github.com/<your-username>/<repository-name>.git
-cd <repository-name>
+git clone https://github.com/<你的用户名>/<仓库名称>.git
+cd <仓库名称>
+```
+
+创建虚拟环境：
+
+```bash
 python -m venv .venv
 ```
 
-Activate the environment:
+激活虚拟环境：
 
-```bash
+```powershell
 # Windows PowerShell
 .venv\Scripts\Activate.ps1
+```
 
-# macOS/Linux
+```bash
+# macOS / Linux
 source .venv/bin/activate
 ```
 
-Then install the dependencies and open the notebook:
+安装依赖并启动 JupyterLab：
 
 ```bash
 python -m pip install -r requirements.txt
 jupyter lab Phase_Transition.ipynb
 ```
 
-Some simulations are computationally intensive. To test the code quickly, reduce the lattice size, number of trials, burn-in sweeps, or sampling sweeps in the relevant cells.
+部分模拟的计算量较大。如果只是希望快速运行和检查代码，可以适当减小晶格尺寸、Monte Carlo 重复次数、预热步数或采样步数。
 
-## Methods
+## 方法简介
 
-For percolation, sites are opened in uniformly random order. A Union-Find structure with virtual top and bottom nodes detects the first spanning cluster. Repeating the experiment yields the threshold distribution and its Monte Carlo estimate.
+### 格点渗流
 
-For the Ising model, each spin is updated from its conditional Gibbs distribution given its four nearest neighbors. Measurements after burn-in are used to examine equilibrium magnetization, energy, and their temperature dependence.
+实验首先将所有格点设置为关闭状态，然后以均匀随机顺序逐个打开格点。程序使用两个虚拟节点分别连接晶格的顶部和底部，并使用并查集动态维护格点之间的连通关系。当两个虚拟节点首次连通时，系统发生渗流，此时开放格点的比例作为本次实验的临界阈值估计。
 
-## Report
+通过多次独立重复实验，可以获得阈值的经验分布、均值和方差，并研究结果随晶格尺寸变化的收敛情况。
 
-The complete methodology, derivations, results, and discussion are available in [Phase_Transition.pdf](Phase_Transition.pdf).
+### 二维 Ising 模型
 
-## License
+每个格点的自旋取值为 `-1` 或 `+1`。在给定相邻自旋状态的情况下，程序根据单个自旋的条件 Gibbs 分布依次更新系统，并采用周期性边界条件减小边界效应。
 
-Copyright remains with the three authors. No reuse license is granted yet. Because this is a collaborative work, an open-source license should be added only after all authors agree; MIT or BSD-3-Clause would be reasonable options for the code.
+经过预热阶段后，程序记录平衡态样本，并计算不同逆温度下的磁化强度和能量，从数值上观察系统从无序态到有序态的转变。
 
----
+## 主要结果
 
-中文简介：本项目通过渗流模型和二维 Ising 模型研究相变现象，使用 Monte Carlo、Union-Find 和 Gibbs Sampling 完成数值模拟，并分析临界点、有限尺寸效应、磁化强度和能量等统计性质。
+对于 `20×20`、`50×50` 和 `100×100` 的二维方格，实验得到的临界渗流阈值分别约为：
+
+| 晶格尺寸 | 临界阈值估计 |
+| --- | ---: |
+| 20×20 | 0.5914 |
+| 50×50 | 0.5922 |
+| 100×100 | 0.5936 |
+
+三个结果均接近二维方格点渗流的参考临界值 `0.592746`。完整的数学推导、实验图表和讨论请参阅 [项目报告](Phase_Transition.pdf)。
+
+## 作者
+
+- 李建浩
+- 李一鸣
+- 吴子涵
+
+## 许可证说明
+
+本项目为三人合作成果，目前著作权归三位作者共同所有，暂未授予代码复用许可。
+
+如需将项目正式作为开源软件发布，建议在获得所有作者同意后添加 MIT、BSD-3-Clause 或其他合适的开源许可证。
